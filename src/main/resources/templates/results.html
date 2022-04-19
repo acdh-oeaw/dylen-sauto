@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SAUTO</title>
+    <link rel="stylesheet" href="/results.css">
+</head>
+<body>
+<div>
+    <h1><b>SAUTO ANALYSIS RESULTS</b></h1>
+    <p>Dylen Tool Version: [[${appVersion}]]</p>
+</div>
+
+<h3><b>GENERAL RESULTS</b></h3>
+<div class="section">
+    <div>
+        <h4>Best Performing Elements</h4>
+        <ol>
+            <li th:each="id : ${bestElements}" th:text="${id.key}"></li>
+        </ol>
+        <h4>Worst Performing Elements</h4>
+        <ol>
+            <li th:each="id : ${worstElements}" th:text="${id.key}"></li>
+        </ol>
+    </div>
+    <p class="text">
+        On the left are two lists of the top three best/worst performing elements in the UI of the web application. The
+        lists are compiled through aggregating the results from all the following analysis methods and extracting the
+        best and worst performing elements. The different methods are weighted when calculating the best and worst. For
+        example, user story completion count is more important than user story completion interaction.
+        <br>
+        The items in the best list are generally intuitive and easy to use for
+        users. And items in the worst list imply the opposite. Developers should look into the elements and try to
+        change their design and functionality to fix possible usability problems.
+    </p>
+</div>
+<div>
+    <p><b>User Stories to Element Ids</b></p>
+    <div class="section">
+        <table>
+            <tr>
+                <th>User Story</th>
+                <th>Element Id</th>
+            </tr>
+            <tr th:each="task : ${completionIdsToTasks}">
+                <td th:text="${task.value}"></td>
+                <td th:text="${task.key}"></td>
+            </tr>
+        </table>
+        <p class="text">User Stories are considered completed when the user clicks on the elements listed on the table
+            under "Element Id". Clicking the respective element doesn't necessarily mean that it is the only user
+            interaction that completes one full story. The story could (but doesn't have to) require multiple
+            interactions before the mentioned element is
+            clicked.
+        </p>
+    </div>
+</div>
+
+<div>
+    <h3><b>METRIC BASED</b></h3>
+</div>
+<div class="section">
+    <table>
+        <tr>
+            <th>Metric</th>
+            <th>Result</th>
+        </tr>
+        <tr>
+            <td>Eligible Session Count</td>
+            <td>[[${sessionCount}]]</td>
+        </tr>
+        <tr>
+            <td>Possible Unique User Story Count</td>
+            <td>[[${uniqueCompletionEventCount}]]</td>
+        </tr>
+        <tr>
+            <td>User Story Completed Per Session</td>
+            <td>[[${avgCompletionEventCount}]]</td>
+        </tr>
+        <tr>
+            <td>Average User Story Completion Duration (s)</td>
+            <td>[[${avgCompletionEventDuration}]]</td>
+        </tr>
+        <tr>
+            <td>Average Session Duration</td>
+            <td>[[${durationAvg}]]</td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows some general statistics. These stats can be compared to other versions of the web application.
+    </p>
+</div>
+
+<h4>User Story Completion Count Per Session</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Element Id</th>
+            <th>User Story</th>
+            <th>Occurrence Count Per Session</th>
+        </tr>
+        <tr th:each="avg : ${completionEventCountAvgs}">
+            <td th:text="${avg.key}"></td>
+            <td th:text="${avg.value.second}"></td>
+            <td th:text="${avg.value.first}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows how many times a user story is completed in one session. The user story with the highest result
+        is the most commonly completed user story. Developers should examine all the user stories with a count of less
+        than 1, which means not all users were able to complete the user story. If there is a story with a count of near
+        or equal to 0, that user story points to a usability problem.
+    </p>
+</div>
+
+<h4>User Story Completion Time Statistics (sorted by Average Duration)</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Element Id</th>
+            <th>User Story</th>
+            <th>Min Duration (s)</th>
+            <th>Average Duration (s)</th>
+            <th>Max Duration (s)</th>
+        </tr>
+        <tr th:each="event : ${completionEventTimeStats}">
+            <td th:text="${event.key}"></td>
+            <td th:text="${event.value.desc}"></td>
+            <td th:text="${event.value.min}"></td>
+            <td th:text="${event.value.avg}"></td>
+            <td th:text="${event.value.max}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows how long it took to complete each user story. The time is calculated as the following: the time
+        that passes since last completion event until this user story's completion event counts as the duration
+        (first one starts from session start). The user story with the highest average duration is the most problematic
+        one.
+    </p>
+</div>
+
+<h4>User Story Completion Interaction Statistics (sorted by Average Count)</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Element Id</th>
+            <th>User Story</th>
+            <th>Min Interaction Count</th>
+            <th>Average Interaction Count</th>
+            <th>Max Interaction Count</th>
+        </tr>
+        <tr th:each="event : ${completionEventInteractionStats}">
+            <td th:text="${event.key}"></td>
+            <td th:text="${event.value.desc}"></td>
+            <td th:text="${event.value.min}"></td>
+            <td th:text="${event.value.avg}"></td>
+            <td th:text="${event.value.max}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows how many user actions are needed to complete each user story. User actions are anything from
+        mouse movement to clicks and every interaction that SAUTO captures. The one with the highest average is the most
+        problematic one.
+    </p>
+</div>
+
+<h4>First Click Duration (from session start) for each element</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Element Id</th>
+            <th>Min Duration</th>
+            <th>Average Duration</th>
+            <th>Max Duration</th>
+        </tr>
+        <tr th:each="stat : ${clickFirstStats}">
+            <td th:text="${stat.key}"></td>
+            <td th:text="${stat.value.min}"></td>
+            <td th:text="${stat.value.avg}"></td>
+            <td th:text="${stat.value.max}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows the time it takes users to click on the element for the first time in a session. It gives
+        an idea of how easily detectable the elements are. It should be kept in mind however that some elements are
+        not visible at the start of the session and come into view later. It also gives a good overview of the workflow
+        of the user (sequence of interactions in order).
+    </p>
+</div>
+
+<div>
+    <h3><b>PATTERN MATCHING</b></h3>
+</div>
+<h4>Mouse Click Repetitions</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Element Id</th>
+            <th>Repetition Count</th>
+        </tr>
+        <tr th:each="repetition : ${repeatedClicks}">
+            <td th:text="${repetition.key}"></td>
+            <td th:text="${repetition.value}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows repeated mouse clicks on the same item throughout all sessions (min 5). The more an item is
+        clicked repeatedly, the more it might point to a usability problem. It is up to the developer to decide if
+        repetition on a specific item is bad.
+    </p>
+</div>
+
+<h4>Repeated Patterns x2</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Pattern Pair</th>
+            <th>Repetition Count</th>
+        </tr>
+        <tr th:each="pattern : ${patterns2}">
+            <td th:text="${pattern.key}"></td>
+            <td th:text="${pattern.value}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows pairs of clicks, that are repeated all sessions (min 5). Repeated click patterns means that an
+        element often follows the other in user click order. Depending on developer's expectations, repeated patterns
+        can provide usability problems or can confirm expected user action order.
+    </p>
+</div>
+
+<h4>Repeated Patterns x3</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Pattern Triple</th>
+            <th>Repetition Count</th>
+        </tr>
+        <tr th:each="pattern : ${patterns3}">
+            <td th:text="${pattern.key}"></td>
+            <td th:text="${pattern.value}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows triples of clicks, that are repeated all sessions (min 5). Repeated click patterns means that
+        an element often follows the other in user click order. Depending on developer's expectations, repeated patterns
+        can provide usability problems or can confirm expected user action order.
+    </p>
+</div>
+
+<h4>Repeated Patterns x4</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Pattern Quadruple</th>
+            <th>Repetition Count</th>
+        </tr>
+        <tr th:each="pattern : ${patterns4}">
+            <td th:text="${pattern.key}"></td>
+            <td th:text="${pattern.value}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows quadruples of clicks, that are repeated all sessions (min 5). Repeated click patterns means
+        that an element often follows the other in user click order. Depending on developer's expectations, repeated
+        patterns can provide usability problems or can confirm expected user action order.
+    </p>
+</div>
+
+<h4>Repeated User Story Patterns x2</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Pattern Pair</th>
+            <th>Repetition Count</th>
+        </tr>
+        <tr th:each="pattern : ${completionEvent2Patterns}">
+            <td th:text="${pattern.key}"></td>
+            <td th:text="${pattern.value}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows pairs of user stories completions, that are repeated all sessions (min 5). Repeated user story
+        patterns mean that a user story often follows the other in user interaction order. Depending on developer's
+        expectations, repeated user story patterns can provide usability problems or can confirm expected user action
+        order.
+    </p>
+</div>
+
+<h4>Repeated User Story Patterns x3</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Pattern Triple</th>
+            <th>Repetition Count</th>
+        </tr>
+        <tr th:each="pattern : ${completionEvent3Patterns}">
+            <td th:text="${pattern.key}"></td>
+            <td th:text="${pattern.value}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows triples of user stories completions, that are repeated all sessions (min 5). Repeated user
+        story patterns mean that a user story often follows the other in user interaction order. Depending on
+        developer's expectations, repeated user story patterns can provide usability problems or can confirm expected
+        user action order.
+    </p>
+</div>
+
+<h4>Repeated User Story Patterns x4</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Pattern Quadruple</th>
+            <th>Repetition Count</th>
+        </tr>
+        <tr th:each="pattern : ${completionEvent4Patterns}">
+            <td th:text="${pattern.key}"></td>
+            <td th:text="${pattern.value}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows quadruples of user stories completions, that are repeated all sessions (min 5). Repeated user
+        story patterns mean that a user story often follows the other in user interaction order. Depending on
+        developer's expectations, repeated user story patterns can provide usability problems or can confirm expected
+        user action order.
+    </p>
+</div>
+
+<div>
+    <h3><b>TASK BASED</b></h3>
+</div>
+<h4>Developer Expectations</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Expectation</th>
+            <th>Occurrence Count</th>
+            <th>Non Occurrence Count</th>
+        </tr>
+        <tr th:each="expectation : ${expectations}">
+            <td th:text="${expectation.key}"></td>
+            <td th:text="${expectation.value[0]}"></td>
+            <td th:text="${expectation.value[1]}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows a list of developer expectations, that were determined by the developers before the tests
+        and how many sessions that these expectations were fulfilled or not. This table is very useful for the
+        developers
+        to see if their application is being used as they as intended.
+    </p>
+</div>
+
+<div>
+    <h3><b>INFERENTIAL</b></h3>
+</div>
+
+<h4>MOUSE CLICK HOTSPOT MAP</h4>
+
+<div class="section">
+    <div class="heatMap">
+        <canvas id="clicks" width="1000" height="600"></canvas>
+    </div>
+    <button onclick="changeBackground()">Change Screenshot</button>
+    <p class="text">
+        This hotspot map shows where the users click the most. It is helpful for visualization of users' mouse clicks
+        which can
+        also be seen in the table below.
+    </p>
+</div>
+
+<h4>Click Counts Per Session For Items With More Than 1 Click</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Element id</th>
+            <th>Click count per Session</th>
+        </tr>
+        <tr th:each="item : ${clickCountPerSession}">
+            <td th:text="${item.key}"></td>
+            <td th:text="${item.value}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows click counts for each element with more than 1 click in average. It helps with the
+        visualization of the hotspot map above.
+    </p>
+</div>
+
+<h4>MOUSE MOVEMENT HOTSPOT MAP</b></h4>
+
+<div class="section">
+    <div class="heatMap">
+        <canvas id="movements" width="1000" height="600"></canvas>
+    </div>
+    <button onclick="changeBackground()">Change Screenshot</button>
+    <p class="text">
+        This hotspot map shows mouse movements. It is helpful for visualization of users' mouse movements which can
+        also be seen in the table below.
+    </p>
+
+</div>
+
+<h4>Mouse Over Count Per Session</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Element Id</th>
+            <th>Mouse Over Count</th>
+        </tr>
+        <tr th:each="mouseOver : ${mouseOverCount}">
+            <td th:text="${mouseOver.key}"></td>
+            <td th:text="${mouseOver.value}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows the mouse over counts, which means when the user brings the mouse onto the element from the
+        outside. It helps with the visualization of the hotspot map above.
+    </p>
+</div>
+
+<h4>MOUSE DRAG MAP</b></h4>
+
+<div class="section">
+    <div class="heatMap">
+        <canvas id="drags" width="1000" height="600"></canvas>
+    </div>
+    <button onclick="changeBackground()">Change Screenshot</button>
+    <p class="text">
+        This map shows where users use drag and drop. Network graphs contain drag and drop functionality and it is
+        useful to see how it is used.
+    </p>
+</div>
+
+<h4 th:if="${appVersion.equals('3.0')}">Durations Per Page</h4>
+<div th:if="${appVersion.equals('3.0')}" class="section">
+    <table>
+        <tr>
+            <th>Page</th>
+            <th>Duration per Session(s)</th>
+            <th>Percentage</th>
+        </tr>
+        <tr th:each="durationsPerPage : ${durationsPerPage}">
+            <td th:text="${durationsPerPage.key}"></td>
+            <td th:text="${durationsPerPage.value.first}"></td>
+            <td th:text="${durationsPerPage.value.second}+'%'"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows how long the users spend on each page. It should be noted that the user starts at ego network
+        page. The more the user spends time on a page, the more that page offers. This is a metric to show us which page
+        is more interesting and more usable.
+    </p>
+</div>
+
+<h4 th:if="${appVersion.equals('3.0')}">Clicks Per Page</h4>
+<div th:if="${appVersion.equals('3.0')}" class="section">
+    <table>
+        <tr>
+            <th>Page</th>
+            <th>Click Count per Session</th>
+            <th>Percentage</th>
+        </tr>
+        <tr th:each="clickPerPage : ${clicksPerPage}">
+            <td th:text="${clickPerPage.key}"></td>
+            <td th:text="${clickPerPage.value.first}"></td>
+            <td th:text="${clickPerPage.value.second}+'%'"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table show the clicks per page average. More clicks per page means users interact more with that page.
+        This table provides us insights into which page out of the 3 provide more interactions and therefore are more
+        usable. It could also show discrepancies between the pages in terms of possible interactions.
+    </p>
+</div>
+
+<h4>More Inferential Metrics</h4>
+<div class="section">
+    <table>
+        <tr>
+            <th>Metric</th>
+            <th>Min</th>
+            <th>Avg</th>
+            <th>Max</th>
+        </tr>
+        <tr th:each="metric : ${inferentialMetrics}">
+            <td th:text="${metric.key}"></td>
+            <td th:text="${metric.value.min}"></td>
+            <td th:text="${metric.value.avg}"></td>
+            <td th:text="${metric.value.max}"></td>
+        </tr>
+    </table>
+    <p class="text">
+        This table shows more inferential metrics. First one is key press counts and the second one is scroll counts.
+        Key presses are used in the target word search and scrolls are used to zoom in and out of the graphs. These
+        metrics are useful to compare between different versions of the web application.
+    </p>
+</div>
+
+<script src="/simpleheat.js"></script>
+<script th:inline="javascript">
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //in the following, the results are multiplied by 10 and 6 because canvas is 100 to 100 but the width and height are 1000 to 600
+
+    let clicks = /*[[${clicks}]]*/ [];
+    clicks = clicks.map(click => [click[0] * 10, click[1] * 6, click[2]])
+
+    let movements = /*[[${movements}]]*/ [];
+    movements = movements.map(movement => [movement[0] * 10, movement[1] * 6, movement[2]])
+
+    const appVersion =  /*[[${appVersion}]]*/ "1.0";
+
+    //drag arrows
+    //copy stack overflow code like a baauusss
+    function canvas_arrow(context, fromx, fromy, tox, toy) {
+        var headlen = 10; // length of head in pixels
+        var dx = tox - fromx;
+        var dy = toy - fromy;
+        var angle = Math.atan2(dy, dx);
+        context.moveTo(fromx, fromy);
+        context.lineTo(tox, toy);
+        context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+        context.moveTo(tox, toy);
+        context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+    }
+
+    let drags = /*[[${drags}]]*/ [];
+    ctx = document.getElementById("drags").getContext("2d");
+    ctx.beginPath();
+    drags.forEach(drag => {
+        canvas_arrow(ctx, drag.start.x * 10, drag.start.y * 6, drag.end.x * 10, drag.end.y * 6);
+    })
+    ctx.stroke();
+
+</script>
+<script src="/results.js"></script>
+</body>
+</html>

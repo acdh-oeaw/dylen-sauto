@@ -1,0 +1,22 @@
+version: "3.7"
+#This file is to start and test the app fastly locally, it is not used in any deployment environment
+services:
+  dylen-sauto:
+    build:
+      context: ..
+      dockerfile: "docker/Dockerfile"
+      args:
+        MONGO_URI: mongodb://root:root@mongo:27017
+    ports:
+      - "5000:5000"
+    environment:
+      MONGO_URI: mongodb://root:root@mongo:27017
+  mongo:
+    image: mongo:bionic
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    restart: always
+    #for testing
+    ports:
+      - "27017:27017"
