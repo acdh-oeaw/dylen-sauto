@@ -19,7 +19,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}   
       - name: Pack Build
-        uses: dfreilich/pack-action@v2.1.0
+        uses: dfreilich/pack-action@v2.1.1
         with:
           args: 'build tmp-cnb-image --builder heroku/buildpacks:18'
       - name: Suggest default port 5000 within image
